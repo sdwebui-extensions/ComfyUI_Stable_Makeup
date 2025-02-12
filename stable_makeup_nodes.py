@@ -131,6 +131,8 @@ class StableMakeup_LoadModel:
     CATEGORY = "Stable_Makeup"
 
     def main_loader(self,ckpt_name,clip,lora,lora_scale,lora_trigger_words,scheduler):
+        if os.path.exists("/stable-diffusion-cache/models/clip/clip-vit-large-patch14"):
+            clip = "/stable-diffusion-cache/models/clip/clip-vit-large-patch14"
         global weigths_current_path,cache_weigths_current_path
         ckpt_path = folder_paths.get_full_path("checkpoints", ckpt_name)
         scheduler_used = get_sheduler(scheduler)
