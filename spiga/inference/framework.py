@@ -6,6 +6,8 @@ import numpy as np
 import folder_paths
 
 weights_path_dft=os.path.join(folder_paths.models_dir,"stable_makeup")
+if os.path.exists(os.path.join(folder_paths.cache_dir,"stable_makeup")):
+    weights_path_dft = os.path.join(folder_paths.cache_dir,"stable_makeup")
 
 from .import pretreatment as pretreat
 from ..models.spiga import SPIGA

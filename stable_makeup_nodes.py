@@ -217,12 +217,15 @@ class StableMakeup_Sampler:
         pipe=model.get("pipe")
         makeup_encoder=model.get("makeup_encoder")
         if facedetector=="mobilenet":
-            weight_path=os.path.join(weigths_current_path, "mobilenet0.25_Final.pth")
+            weight_path=os.path.join(weigths_current_path, "densnet121.pth")
             if not os.path.exists(weight_path) and os.path.exists(cache_weigths_current_path):
                 weigths_current_path = cache_weigths_current_path
-                weight_path = os.path.join(weigths_current_path,"mobilenet0.25_Final.pth")
+                weight_path = os.path.join(weigths_current_path,"densnet121.pth")
         else:
             weight_path=os.path.join(weigths_current_path, "resnet50.pth")
+            if not os.path.exists(weight_path) and os.path.exists(cache_weigths_current_path):
+                weigths_current_path = cache_weigths_current_path
+                weight_path = os.path.join(weigths_current_path,"resnet50.pth")
         detector = FaceDetector(name=facedetector,weight_path=weight_path)
         
         def get_draw(pil_img, size,dataname):
