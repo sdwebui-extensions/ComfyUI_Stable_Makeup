@@ -26,6 +26,7 @@ makeup_current_path = os.path.dirname(os.path.abspath(__file__))
 weigths_current_path = os.path.join(folder_paths.models_dir, "stable_makeup")
 if not os.path.exists(weigths_current_path):
     os.makedirs(weigths_current_path)
+cache_weigths_current_path = os.path.join(folder_paths.cache_dir, "stable_makeup")
 
 scheduler_list = ["DDIM",
     "Euler",
@@ -130,12 +131,16 @@ class StableMakeup_LoadModel:
     CATEGORY = "Stable_Makeup"
 
     def main_loader(self,ckpt_name,clip,lora,lora_scale,lora_trigger_words,scheduler):
+        global weigths_current_path,cache_weigths_current_path
         ckpt_path = folder_paths.get_full_path("checkpoints", ckpt_name)
         scheduler_used = get_sheduler(scheduler)
         makeup_encoder_path = os.path.join(weigths_current_path,"pytorch_model.bin")
+        if not os.path.exists(makeup_encoder_path) and os.path.exists(cache_weigths_current_path):
+            weigths_current_path = cache_weigths_current_path
+            makeup_encoder_path = os.path.join(weigths_current_path,"pytorch_model.bin")
         id_encoder_path = os.path.join(weigths_current_path,"pytorch_model_1.bin")
         pose_encoder_path = os.path.join(weigths_current_path,"pytorch_model_2.bin")
-        original_config_file=os.path.join(folder_paths.models_dir,"configs","v1-inference.yaml")
+        original_config_file=os.path.join(weigths_current_path,"configs","v1-inference.yaml")
         sd15_config=os.path.join(makeup_current_path,"sd15_config")
         if dif_version_int >= 28:
              pipe = StableDiffusionPipeline.from_single_file(
@@ -205,11 +210,15 @@ class StableMakeup_Sampler:
     
     
     def makeup_main(self, id_image, makeup_image, model,facedetector,dataname,cfg, steps,width, height ):
+        global weigths_current_path,cache_weigths_current_path
         
         pipe=model.get("pipe")
         makeup_encoder=model.get("makeup_encoder")
         if facedetector=="mobilenet":
             weight_path=os.path.join(weigths_current_path, "mobilenet0.25_Final.pth")
+            if not os.path.exists(weight_path) and os.path.exists(cache_weigths_current_path):
+                weigths_current_path = cache_weigths_current_path
+                weight_path = os.path.join(weigths_current_path,"mobilenet0.25_Final.pth")
         else:
             weight_path=os.path.join(weigths_current_path, "resnet50.pth")
         detector = FaceDetector(name=facedetector,weight_path=weight_path)
